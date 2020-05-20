@@ -1,60 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux_with_libraries_flutter/action/action.dart';
-import 'package:redux_with_libraries_flutter/presentation/viewmodel/main_viewmodel.dart';
-import 'package:redux_with_libraries_flutter/state/app_state.dart';
+import 'package:redux_with_libraries_flutter/presentation/view/counter_page.dart';
+import 'package:redux_with_libraries_flutter/presentation/view/result_page.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, MainViewModel>(
-      converter: (store) {
-        return MainViewModel(
-          count: store.state.count,
-          onPlus: () => store.dispatch(IncrementCountAction()),
-          onMinus: () => store.dispatch(DecrementCountAction()),
-        );
+    return Scaffold(
+      body: _buildStackedPagesWidget(),
+      bottomNavigationBar: _buildBottomNavigationBarWidget(),
+    );
+  }
+
+  Widget _buildStackedPagesWidget() {
+    return Stack(
+      children: <Widget>[
+        _buildOffstageWidget(0, CounterPage()),
+        _buildOffstageWidget(1, ResultPage()),
+      ],
+    );
+  }
+
+  Widget _buildOffstageWidget(int index, Widget page) {
+    return Offstage(
+      offstage: index != _currentIndex,
+      child: TickerMode(
+        enabled: index == _currentIndex,
+        child: page,
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigationBarWidget() {
+    return BottomNavigationBar(
+      onTap: (index) {
+        setState(() => _currentIndex = index);
       },
-      builder: (context, viewmodel) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'You have pushed the button this many times:',
-                ),
-                Text(
-                  '${viewmodel.count}',
-                  style: Theme.of(context).textTheme.display1,
-                ),
-                RaisedButton(
-                  child: Text('plus'),
-                  onPressed: viewmodel.onPlus,
-                  color: Theme.of(context).primaryColor,
-                ),
-                RaisedButton(
-                  child: Text('minus'),
-                  onPressed: viewmodel.onMinus,
-                  color: Theme.of(context).primaryColor,
-                )
-              ],
-            ),
-          ),
-        );
-      },
+      currentIndex: _currentIndex,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          title: Text('counter'),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.note),
+          title: Text('result'),
+        ),
+      ],
     );
   }
 }
