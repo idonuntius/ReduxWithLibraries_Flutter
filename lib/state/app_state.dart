@@ -1,10 +1,15 @@
 import 'package:meta/meta.dart';
+import 'package:redux_with_libraries_flutter/state/counter_state.dart';
 
 @immutable
 class AppState {
-  final int count;
+  final CounterState counter;
 
-  AppState({this.count});
+  AppState({this.counter});
 
-  AppState.initialState() : count = 0;
+  factory AppState.initialState() {
+    return AppState(
+      counter: CounterState(),
+    );
+  }
 }
