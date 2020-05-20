@@ -2,7 +2,8 @@ class IncrementCountAction {}
 
 class DecrementCountAction {}
 
-enum Actions {
-  Increment,
-  Decrement,
+class SelectBottomNavigationItemAction {
+  final int selectedIndex;
+
+  SelectBottomNavigationItemAction({this.selectedIndex});
 }
